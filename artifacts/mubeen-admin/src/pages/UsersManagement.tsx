@@ -17,6 +17,7 @@ import {
   Ban,
   CheckCircle,
   User,
+  X,
 } from "lucide-react";
 
 interface AppUser {
@@ -44,6 +45,7 @@ export default function UsersManagement() {
   const [sortField, setSortField] = useState<SortField>(null);
   const [sortDir, setSortDir] = useState<SortDir>("desc");
   const [actionLoading, setActionLoading] = useState<string | null>(null);
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
 
   useEffect(() => {
     if (!didInit.current && initialSearch) {
@@ -217,9 +219,10 @@ export default function UsersManagement() {
                           <img
                             src={user.profileImage}
                             alt={user.displayName}
-                            className="w-8 h-8 rounded-full object-cover flex-shrink-0"
+                            className="w-8 h-8 rounded-full object-cover flex-shrink-0 cursor-pointer ring-2 ring-transparent hover:ring-[#c2a05e] transition"
+                            onClick={() => setPreviewImage(user.profileImage)}
                             onError={(e) => {
-                              (e.target as HTMLImageElement).src = "";
+                              (e.target as HTMLImageElement).style.display = "none";
                             }}
                           />
                         ) : (
@@ -290,6 +293,30 @@ export default function UsersManagement() {
           إجمالي: {sorted.length} مستخدم
         </div>
       </div>
+
+      {previewImage && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm"
+          onClick={() => setPreviewImage(null)}
+        >
+          <div
+            className="relative"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <img
+              src={previewImage}
+              alt="صورة المستخدم"
+              className="max-h-[80vh] max-w-[80vw] rounded-2xl shadow-2xl object-contain"
+            />
+            <button
+              onClick={() => setPreviewImage(null)}
+              className="absolute -top-3 -left-3 w-8 h-8 bg-white rounded-full shadow-lg flex items-center justify-center text-gray-600 hover:text-gray-900 transition"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

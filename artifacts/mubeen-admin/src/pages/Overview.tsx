@@ -8,6 +8,7 @@ interface Stats {
   totalMCQ: number;
   totalEssay: number;
   pendingReports: number;
+  resolvedReports: number;
 }
 
 export default function Overview() {
@@ -16,17 +17,19 @@ export default function Overview() {
     totalMCQ: 0,
     totalEssay: 0,
     pendingReports: 0,
+    resolvedReports: 0,
   });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const [usersSnap, mcqSnap, essaySnap, pendingSnap] = await Promise.all([
+        const [usersSnap, mcqSnap, essaySnap, pendingSnap, resolvedSnap] = await Promise.all([
           getDocs(query(collection(db, "users"), where("role", "==", "user"))),
           getDocs(collection(db, "MCQ")),
           getDocs(collection(db, "essay_questions")),
           getDocs(query(collection(db, "reports"), where("status", "==", "pending"))),
+          getDocs(query(collection(db, "reports"), where("status", "==", "resolved"))),
         ]);
 
         setStats({
@@ -34,6 +37,7 @@ export default function Overview() {
           totalMCQ: mcqSnap.size,
           totalEssay: essaySnap.size,
           pendingReports: pendingSnap.size,
+          resolvedReports: resolvedSnap.size,
         });
       } catch (err) {
         console.error("Error fetching stats:", err);
@@ -71,12 +75,12 @@ export default function Overview() {
       textColor: "text-gray-700",
     },
     {
-      label: "البلاغات المعلّقة",
-      value: stats.pendingReports,
+      label: "البلاغات المحلولة",
+      value: stats.resolvedReports,
       icon: Flag,
-      color: "bg-orange-600",
-      light: "bg-orange-50",
-      textColor: "text-orange-700",
+      color: "bg-green-700",
+      light: "bg-green-50",
+      textColor: "text-green-700",
     },
   ];
 
