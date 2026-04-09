@@ -15,12 +15,15 @@ import {
   MessageSquare,
   ChevronDown,
   ChevronUp,
+  HelpCircle,
+  Info,
 } from "lucide-react";
 
 interface UserInfo {
   email: string;
   displayName: string;
   points: number;
+  profileImage?: string;
 }
 
 interface QuestionInfo {
@@ -33,11 +36,72 @@ interface Report {
   report_title: string;
   report_text: string;
   status: "pending" | "resolved";
+  report_type: string;
   created_at: Timestamp | null;
   reporting_user: UserInfo;
   reported_user: UserInfo;
   reported_question: QuestionInfo;
 }
+
+function UserCard({
+  user,
+  label,
+  variant,
+}: {
+  user: UserInfo;
+  label: string;
+  variant: "reporter" | "reported";
+}) {
+  const isReported = variant === "reported";
+
+  return (
+    <div
+      className={`rounded-xl p-4 ${isReported ? "bg-red-50 border border-red-100" : "bg-gray-50 border border-gray-100"}`}
+    >
+      <div className="flex items-center gap-2 mb-3">
+        {isReported ? (
+          <Flag className="h-4 w-4 text-red-500" />
+        ) : (
+          <User className="h-4 w-4 text-[#670320]" />
+        )}
+        <p className="text-xs font-semibold text-gray-500">{label}</p>
+      </div>
+      <div className="flex items-center gap-3">
+        {user.profileImage ? (
+          <img
+            src={user.profileImage}
+            alt={user.displayName}
+            className="w-10 h-10 rounded-full object-cover flex-shrink-0 border-2 border-white shadow-sm"
+            onError={(e) => {
+              (e.target as HTMLImageElement).style.display = "none";
+            }}
+          />
+        ) : (
+          <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center flex-shrink-0">
+            <User className="h-5 w-5 text-gray-400" />
+          </div>
+        )}
+        <div className="min-w-0 flex-1">
+          <p className="text-sm font-semibold text-gray-800 truncate">
+            {user.displayName || "—"}
+          </p>
+          <p className="text-xs text-gray-500 font-mono truncate">{user.email}</p>
+          {user.points != null && (
+            <p className="text-xs text-[#c2a05e] font-medium mt-0.5">
+              {user.points.toLocaleString("ar-SA")} نقطة
+            </p>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+const reportTypeLabels: Record<string, string> = {
+  question: "بلاغ عن سؤال",
+  user: "بلاغ عن مستخدم",
+  general: "بلاغ عام",
+};
 
 export default function ReportsManagement() {
   const [reports, setReports] = useState<Report[]>([]);
@@ -55,16 +119,19 @@ export default function ReportsManagement() {
         report_title: d.data().report_title || "",
         report_text: d.data().report_text || "",
         status: d.data().status || "pending",
+        report_type: d.data().report_type || "",
         created_at: d.data().created_at || null,
         reporting_user: d.data().reporting_user || {
           email: "",
           displayName: "",
           points: 0,
+          profileImage: "",
         },
         reported_user: d.data().reported_user || {
           email: "",
           displayName: "",
           points: 0,
+          profileImage: "",
         },
         reported_question: d.data().reported_question || {
           question_text: "",
@@ -131,14 +198,16 @@ export default function ReportsManagement() {
     <div className="p-8">
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-800">إدارة البلاغات</h1>
-        <p className="text-gray-500 text-sm mt-1">مراجعة ومعالجة بلاغات المستخدمين</p>
+        <p className="text-gray-500 text-sm mt-1">
+          مراجعة ومعالجة بلاغات المستخدمين
+        </p>
       </div>
 
       <div className="flex gap-2 mb-6">
         {[
           { key: "all", label: `الكل (${reports.length})` },
-          { key: "pending", label: `معلّقة (${pendingCount})` },
-          { key: "resolved", label: `محلولة (${resolvedCount})` },
+          { key: "pending", label: `بانتظار المراجعة (${pendingCount})` },
+          { key: "resolved", label: `تمت المعالجة (${resolvedCount})` },
         ].map((tab) => (
           <button
             key={tab.key}
@@ -167,7 +236,7 @@ export default function ReportsManagement() {
           ))
         ) : filtered.length === 0 ? (
           <div className="bg-white rounded-xl border border-gray-100 p-12 text-center text-gray-400">
-            لا توجد تقارير في هذه الفئة
+            لا توجد بلاغات في هذه الفئة
           </div>
         ) : (
           filtered.map((report) => (
@@ -182,31 +251,39 @@ export default function ReportsManagement() {
                       className={`mt-0.5 flex-shrink-0 p-2 rounded-lg ${
                         report.status === "pending"
                           ? "bg-orange-100"
-                          : "bg-green-100"
+                          : "bg-gray-100"
                       }`}
                     >
                       {report.status === "pending" ? (
-                        <Clock className="h-4 w-4 text-orange-600" />
+                        <Clock className="h-4 w-4 text-orange-500" />
                       ) : (
-                        <CheckCircle className="h-4 w-4 text-green-600" />
+                        <CheckCircle className="h-4 w-4 text-gray-400" />
                       )}
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap mb-1">
                         <h3 className="font-semibold text-gray-800 text-sm">
-                          {report.report_title || "تقرير بدون عنوان"}
+                          {report.report_title || "بلاغ بدون عنوان"}
                         </h3>
                         <span
                           className={`px-2 py-0.5 rounded-full text-xs font-medium ${
                             report.status === "pending"
                               ? "bg-orange-100 text-orange-700"
-                              : "bg-green-100 text-green-700"
+                              : "bg-gray-100 text-gray-500"
                           }`}
                         >
-                          {report.status === "pending" ? "معلّق" : "محلول"}
+                          {report.status === "pending"
+                            ? "بانتظار المراجعة"
+                            : "تمت المعالجة"}
                         </span>
+                        {report.report_type && (
+                          <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-[#670320]/10 text-[#670320]">
+                            {reportTypeLabels[report.report_type] ||
+                              report.report_type}
+                          </span>
+                        )}
                       </div>
-                      <p className="text-gray-500 text-xs">
+                      <p className="text-gray-400 text-xs">
                         {formatDate(report.created_at)}
                       </p>
                     </div>
@@ -228,19 +305,24 @@ export default function ReportsManagement() {
                       )}
                     </button>
 
-                    {report.status === "pending" && (
+                    {report.status === "pending" ? (
                       <button
                         onClick={() => markResolved(report.id)}
                         disabled={resolvingId === report.id}
-                        className="flex items-center gap-1.5 px-3 py-1.5 bg-green-100 text-green-700 text-xs font-semibold rounded-lg hover:bg-green-200 disabled:opacity-50 transition"
+                        className="flex items-center gap-1.5 px-3 py-1.5 bg-[#670320] text-white text-xs font-semibold rounded-lg hover:bg-[#8a0428] disabled:opacity-50 transition shadow-sm"
                       >
                         {resolvingId === report.id ? (
-                          <span className="animate-spin rounded-full h-3 w-3 border-2 border-green-700 border-t-transparent" />
+                          <span className="animate-spin rounded-full h-3 w-3 border-2 border-white border-t-transparent" />
                         ) : (
                           <CheckCircle className="h-3.5 w-3.5" />
                         )}
-                        تم الحل
+                        تعيين كمُعالَج
                       </button>
+                    ) : (
+                      <span className="flex items-center gap-1 px-3 py-1.5 bg-gray-50 text-gray-400 text-xs font-medium rounded-lg border border-gray-200">
+                        <CheckCircle className="h-3.5 w-3.5" />
+                        مُعالَج
+                      </span>
                     )}
                   </div>
                 </div>
@@ -248,11 +330,11 @@ export default function ReportsManagement() {
                 {expandedId === report.id && (
                   <div className="mt-4 pt-4 border-t border-gray-100 space-y-4">
                     {report.report_text && (
-                      <div className="flex items-start gap-3">
+                      <div className="flex items-start gap-3 bg-gray-50 rounded-xl p-4">
                         <MessageSquare className="h-4 w-4 text-gray-400 flex-shrink-0 mt-0.5" />
                         <div>
                           <p className="text-xs font-semibold text-gray-400 mb-1">
-                            نص التقرير
+                            نص البلاغ
                           </p>
                           <p className="text-sm text-gray-700 leading-relaxed">
                             {report.report_text}
@@ -261,59 +343,74 @@ export default function ReportsManagement() {
                       </div>
                     )}
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      <div className="bg-gray-50 rounded-xl p-4">
+                    {report.report_type === "general" ? (
+                      <div className="bg-blue-50 rounded-xl p-4 border border-blue-100">
                         <div className="flex items-center gap-2 mb-2">
-                          <User className="h-4 w-4 text-[#670320]" />
+                          <Info className="h-4 w-4 text-blue-500" />
                           <p className="text-xs font-semibold text-gray-500">
-                            المُبلِّغ
+                            بلاغ عام
                           </p>
                         </div>
-                        <p className="text-sm font-medium text-gray-800">
-                          {report.reporting_user.displayName || "—"}
+                        <p className="text-sm text-gray-600 leading-relaxed">
+                          هذا البلاغ ذو طابع عام ولا يتعلق بمستخدم أو سؤال
+                          محدد. يرجى الاطلاع على نص البلاغ أعلاه واتخاذ
+                          الإجراء المناسب.
                         </p>
-                        <p className="text-xs text-gray-500 font-mono">
-                          {report.reporting_user.email}
-                        </p>
-                        <p className="text-xs text-[#c2a05e] mt-1">
-                          {report.reporting_user.points?.toLocaleString("ar-SA")} نقطة
-                        </p>
-                      </div>
-
-                      <div className="bg-red-50 rounded-xl p-4">
-                        <div className="flex items-center gap-2 mb-2">
-                          <Flag className="h-4 w-4 text-red-500" />
-                          <p className="text-xs font-semibold text-gray-500">
-                            المُبلَّغ عنه
-                          </p>
+                        <div className="mt-3">
+                          <UserCard
+                            user={report.reporting_user}
+                            label="المُبلِّغ"
+                            variant="reporter"
+                          />
                         </div>
-                        <p className="text-sm font-medium text-gray-800">
-                          {report.reported_user.displayName || "—"}
-                        </p>
-                        <p className="text-xs text-gray-500 font-mono">
-                          {report.reported_user.email}
-                        </p>
-                        <p className="text-xs text-[#c2a05e] mt-1">
-                          {report.reported_user.points?.toLocaleString("ar-SA")} نقطة
-                        </p>
                       </div>
-                    </div>
+                    ) : (
+                      <div
+                        className={`grid gap-3 ${
+                          report.report_type === "question" ||
+                          report.report_type === "user"
+                            ? "grid-cols-1"
+                            : "grid-cols-1 sm:grid-cols-2"
+                        }`}
+                      >
+                        <UserCard
+                          user={report.reporting_user}
+                          label="المُبلِّغ"
+                          variant="reporter"
+                        />
 
-                    {report.reported_question?.question_text && (
-                      <div className="bg-amber-50 rounded-xl p-4 border border-amber-100">
-                        <p className="text-xs font-semibold text-gray-500 mb-1">
-                          السؤال المُبلَّغ عنه
-                          {report.reported_question.type && (
-                            <span className="mr-2 px-1.5 py-0.5 bg-[#c2a05e]/20 text-[#a8833a] rounded text-xs">
-                              {report.reported_question.type}
-                            </span>
+                        {report.report_type !== "question" &&
+                          (report.reported_user?.email ||
+                            report.reported_user?.displayName) && (
+                            <UserCard
+                              user={report.reported_user}
+                              label="المُبلَّغ عنه"
+                              variant="reported"
+                            />
                           )}
-                        </p>
-                        <p className="text-sm text-gray-700 leading-relaxed">
-                          {report.reported_question.question_text}
-                        </p>
                       </div>
                     )}
+
+                    {report.report_type !== "user" &&
+                      report.report_type !== "general" &&
+                      report.reported_question?.question_text && (
+                        <div className="bg-amber-50 rounded-xl p-4 border border-amber-100">
+                          <div className="flex items-center gap-2 mb-2">
+                            <HelpCircle className="h-4 w-4 text-amber-600" />
+                            <p className="text-xs font-semibold text-gray-500">
+                              السؤال المُبلَّغ عنه
+                              {report.reported_question.type && (
+                                <span className="mr-2 px-1.5 py-0.5 bg-[#c2a05e]/20 text-[#a8833a] rounded text-xs">
+                                  {report.reported_question.type}
+                                </span>
+                              )}
+                            </p>
+                          </div>
+                          <p className="text-sm text-gray-700 leading-relaxed">
+                            {report.reported_question.question_text}
+                          </p>
+                        </div>
+                      )}
                   </div>
                 )}
               </div>

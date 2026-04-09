@@ -116,7 +116,7 @@ export default function QuestionsManager() {
       await updateDoc(doc(db, collName, q.id), editData);
       setQuestions((prev) =>
         prev.map((item) =>
-          item.id === q.id ? { ...item, ...editData } as Question : item
+          item.id === q.id ? ({ ...item, ...editData } as Question) : item
         )
       );
       setEditingId(null);
@@ -139,6 +139,8 @@ export default function QuestionsManager() {
   };
 
   const displayed = questions.filter((q) => q.type === activeTab);
+
+  const currentChoices = (editData.choices || []).filter((c) => c.trim() !== "");
 
   return (
     <div className="p-8">
@@ -211,18 +213,6 @@ export default function QuestionsManager() {
                     <>
                       <div>
                         <label className="block text-xs font-semibold text-gray-500 mb-1">
-                          الإجابة الصحيحة
-                        </label>
-                        <input
-                          value={editData.answer || ""}
-                          onChange={(e) =>
-                            setEditData((d) => ({ ...d, answer: e.target.value }))
-                          }
-                          className="w-full p-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#670320]/20 focus:border-[#670320]"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-xs font-semibold text-gray-500 mb-1">
                           الخيارات (كل خيار في سطر)
                         </label>
                         <textarea
@@ -231,12 +221,79 @@ export default function QuestionsManager() {
                             setEditData((d) => ({
                               ...d,
                               choices: e.target.value.split("\n"),
+                              answer:
+                                d.answer &&
+                                !e.target.value
+                                  .split("\n")
+                                  .filter((c) => c.trim())
+                                  .includes(d.answer)
+                                  ? ""
+                                  : d.answer,
                             }))
                           }
                           className="w-full p-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#670320]/20 focus:border-[#670320] resize-none"
                           rows={4}
                         />
+                        <p className="text-xs text-gray-400 mt-1">
+                          أضف أو عدّل الخيارات أولاً، ثم اختر الإجابة الصحيحة من القائمة أدناه
+                        </p>
                       </div>
+
+                      <div>
+                        <label className="block text-xs font-semibold text-gray-500 mb-1">
+                          الإجابة الصحيحة
+                        </label>
+                        {currentChoices.length > 0 ? (
+                          <div className="space-y-2">
+                            {currentChoices.map((choice, i) => (
+                              <label
+                                key={i}
+                                className={`flex items-center gap-3 p-3 rounded-xl border-2 cursor-pointer transition-all ${
+                                  editData.answer === choice
+                                    ? "border-[#670320] bg-[#670320]/5"
+                                    : "border-gray-200 hover:border-gray-300 bg-white"
+                                }`}
+                              >
+                                <div
+                                  className={`w-4 h-4 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-all ${
+                                    editData.answer === choice
+                                      ? "border-[#670320] bg-[#670320]"
+                                      : "border-gray-300"
+                                  }`}
+                                >
+                                  {editData.answer === choice && (
+                                    <div className="w-1.5 h-1.5 rounded-full bg-white" />
+                                  )}
+                                </div>
+                                <input
+                                  type="radio"
+                                  name={`answer-${q.id}`}
+                                  value={choice}
+                                  checked={editData.answer === choice}
+                                  onChange={() =>
+                                    setEditData((d) => ({ ...d, answer: choice }))
+                                  }
+                                  className="sr-only"
+                                />
+                                <span
+                                  className={`text-sm ${
+                                    editData.answer === choice
+                                      ? "font-semibold text-[#670320]"
+                                      : "text-gray-700"
+                                  }`}
+                                >
+                                  {choice}
+                                </span>
+                              </label>
+                            ))}
+                          </div>
+                        ) : (
+                          <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg text-amber-700 text-xs">
+                            أضف الخيارات أولاً لتتمكن من اختيار الإجابة الصحيحة
+                          </div>
+                        )}
+                      </div>
+
                       <div>
                         <label className="block text-xs font-semibold text-gray-500 mb-1">
                           التفسير
@@ -295,8 +352,9 @@ export default function QuestionsManager() {
                   <div className="flex gap-2 pt-2">
                     <button
                       onClick={() => saveEdit(q)}
-                      disabled={saving}
+                      disabled={saving || (q.type === "MCQ" && !editData.answer)}
                       className="flex items-center gap-2 px-4 py-2 bg-[#670320] text-white text-sm font-semibold rounded-lg hover:bg-[#8a0428] disabled:opacity-50 transition"
+                      title={q.type === "MCQ" && !editData.answer ? "اختر الإجابة الصحيحة أولاً" : ""}
                     >
                       {saving ? (
                         <span className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent" />
@@ -322,8 +380,8 @@ export default function QuestionsManager() {
                         {q.question}
                       </p>
                       {q.type === "MCQ" && (
-                        <p className="text-xs text-[#670320] mt-1">
-                          الإجابة: {q.answer}
+                        <p className="text-xs text-[#670320] mt-1 font-medium">
+                          ✓ {q.answer}
                         </p>
                       )}
                       {q.type === "essay" && q.category && (
@@ -391,11 +449,11 @@ export default function QuestionsManager() {
                                   key={i}
                                   className={`px-2 py-1 rounded-lg text-xs ${
                                     c === q.answer
-                                      ? "bg-green-100 text-green-700 font-semibold"
+                                      ? "bg-[#670320]/10 text-[#670320] font-semibold ring-1 ring-[#670320]/30"
                                       : "bg-gray-100 text-gray-600"
                                   }`}
                                 >
-                                  {c}
+                                  {c === q.answer ? `✓ ${c}` : c}
                                 </span>
                               ))}
                             </div>

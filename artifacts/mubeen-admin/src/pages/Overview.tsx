@@ -71,7 +71,7 @@ export default function Overview() {
       textColor: "text-gray-700",
     },
     {
-      label: "التقارير المعلقة",
+      label: "البلاغات المعلّقة",
       value: stats.pendingReports,
       icon: Flag,
       color: "bg-orange-600",
