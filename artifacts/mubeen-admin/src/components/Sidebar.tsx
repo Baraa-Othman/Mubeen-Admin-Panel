@@ -10,13 +10,14 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { cn } from "@/lib/utils";
+import logo from "@assets/Baraa_and_khalid_future_1775732882119.png";
 
 const navItems = [
   { href: "/", icon: LayoutDashboard, label: "الرئيسية" },
   { href: "/users", icon: Users, label: "إدارة المستخدمين" },
   { href: "/questions", icon: HelpCircle, label: "إدارة الأسئلة" },
   { href: "/upload", icon: Upload, label: "رفع الأسئلة" },
-  { href: "/reports", icon: Flag, label: "التقارير" },
+  { href: "/reports", icon: Flag, label: "البلاغات" },
 ];
 
 function NavItem({
@@ -63,10 +64,14 @@ export default function Sidebar() {
       className="w-64 bg-[#670320] min-h-screen flex flex-col shadow-2xl"
       dir="rtl"
     >
-      <div className="p-6 border-b border-white/10">
+      <div className="p-5 border-b border-white/10">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-[#c2a05e] flex items-center justify-center flex-shrink-0">
-            <span className="text-[#670320] font-bold text-lg">م</span>
+          <div className="w-12 h-12 rounded-full bg-[#670320] flex items-center justify-center flex-shrink-0 overflow-hidden border-2 border-[#c2a05e]/60">
+            <img
+              src={logo}
+              alt="مُبين"
+              className="w-full h-full object-contain"
+            />
           </div>
           <div>
             <h1 className="text-white font-bold text-lg leading-tight">مُبين</h1>

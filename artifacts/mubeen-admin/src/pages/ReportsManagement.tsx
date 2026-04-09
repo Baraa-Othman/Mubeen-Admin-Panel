@@ -130,8 +130,8 @@ export default function ReportsManagement() {
   return (
     <div className="p-8">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-800">إدارة التقارير</h1>
-        <p className="text-gray-500 text-sm mt-1">مراجعة ومعالجة تقارير المستخدمين</p>
+        <h1 className="text-2xl font-bold text-gray-800">إدارة البلاغات</h1>
+        <p className="text-gray-500 text-sm mt-1">مراجعة ومعالجة بلاغات المستخدمين</p>
       </div>
 
       <div className="flex gap-2 mb-6">

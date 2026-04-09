@@ -4,6 +4,8 @@ import {
   getDocs,
   doc,
   updateDoc,
+  query,
+  where,
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import {
@@ -40,7 +42,7 @@ export default function UsersManagement() {
 
   const fetchUsers = useCallback(async () => {
     try {
-      const snap = await getDocs(collection(db, "users"));
+      const snap = await getDocs(query(collection(db, "users"), where("role", "==", "user")));
       const data: AppUser[] = snap.docs.map((d) => ({
         id: d.id,
         displayName: d.data().displayName || "",

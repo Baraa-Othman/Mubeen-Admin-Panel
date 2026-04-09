@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Eye, EyeOff, Lock, Mail } from "lucide-react";
+import logo from "@assets/Baraa_and_khalid_future_1775732882119.png";
 
 export default function Login() {
   const { login, authError } = useAuth();
@@ -19,19 +20,29 @@ export default function Login() {
   return (
     <div
       dir="rtl"
-      className="min-h-screen bg-gradient-to-br from-[#670320] via-[#8a0428] to-[#4a0218] flex items-center justify-center p-4"
+      className="min-h-screen bg-gray-50 flex items-center justify-center p-4"
     >
       <div className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 mb-4">
-            <span className="text-4xl font-bold text-[#c2a05e]">م</span>
+        <div className="text-center mb-6">
+          <div className="inline-flex items-center justify-center w-24 h-24 rounded-full bg-[#670320] mb-3 overflow-hidden shadow-xl">
+            <img
+              src={logo}
+              alt="مُبين"
+              className="w-full h-full object-contain"
+            />
           </div>
-          <h1 className="text-3xl font-bold text-white mb-1">مُبين</h1>
-          <p className="text-white/60 text-sm">لوحة تحكم المسؤول</p>
+          <h1 className="text-2xl font-bold text-[#670320] mb-0.5">مُبين</h1>
+          <p className="text-gray-400 text-sm">لوحة تحكم المسؤول</p>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-2xl p-8">
-          <h2 className="text-xl font-bold text-[#670320] mb-6 text-center">
+        <div
+          className="bg-white rounded-2xl shadow-lg p-8"
+          style={{
+            border: "2px solid #c2a05e",
+            boxShadow: "0 4px 32px 0 rgba(194,160,94,0.15), 0 2px 8px 0 rgba(103,3,32,0.08)",
+          }}
+        >
+          <h2 className="text-lg font-bold text-gray-800 mb-6 text-center">
             تسجيل الدخول
           </h2>
 
@@ -48,7 +59,7 @@ export default function Login() {
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                  <Mail className="h-4 w-4 text-gray-400" />
+                  <Mail className="h-4 w-4 text-[#c2a05e]" />
                 </div>
                 <input
                   type="email"
@@ -56,7 +67,7 @@ export default function Login() {
                   onChange={(e) => setEmail(e.target.value)}
                   required
                   placeholder="admin@mubeen.com"
-                  className="w-full pr-10 pl-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#670320]/30 focus:border-[#670320] text-gray-800 bg-gray-50 transition"
+                  className="w-full pr-10 pl-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#c2a05e]/30 focus:border-[#c2a05e] text-gray-800 bg-gray-50 transition"
                 />
               </div>
             </div>
@@ -67,7 +78,7 @@ export default function Login() {
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                  <Lock className="h-4 w-4 text-gray-400" />
+                  <Lock className="h-4 w-4 text-[#c2a05e]" />
                 </div>
                 <input
                   type={showPassword ? "text" : "password"}
@@ -75,7 +86,7 @@ export default function Login() {
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   placeholder="••••••••"
-                  className="w-full pr-10 pl-10 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#670320]/30 focus:border-[#670320] text-gray-800 bg-gray-50 transition"
+                  className="w-full pr-10 pl-10 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#c2a05e]/30 focus:border-[#c2a05e] text-gray-800 bg-gray-50 transition"
                 />
                 <button
                   type="button"
@@ -94,7 +105,7 @@ export default function Login() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full py-3 bg-[#670320] text-white font-bold rounded-lg hover:bg-[#8a0428] disabled:opacity-60 disabled:cursor-not-allowed transition-all duration-200 shadow-lg hover:shadow-xl mt-2"
+              className="w-full py-3 bg-[#670320] text-white font-bold rounded-xl hover:bg-[#8a0428] disabled:opacity-60 disabled:cursor-not-allowed transition-all duration-200 shadow-md hover:shadow-lg mt-2"
             >
               {isLoading ? (
                 <span className="flex items-center justify-center gap-2">
@@ -108,7 +119,7 @@ export default function Login() {
           </form>
         </div>
 
-        <p className="text-center text-white/40 text-xs mt-6">
+        <p className="text-center text-gray-400 text-xs mt-5">
           © 2024 مُبين - جميع الحقوق محفوظة
         </p>
       </div>
