@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "Mubeen Admin Dashboard"
+version = "1.0.0"
+id = "artifacts/mubeen-admin"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 19015
+
+[services.development]
+run = "pnpm --filter @workspace/mubeen-admin run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/mubeen-admin", "run", "build" ]
+publicDir = "artifacts/mubeen-admin/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "19015"
+BASE_PATH = "/"
