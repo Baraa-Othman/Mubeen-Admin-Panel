@@ -1,4 +1,5 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
+import { useSearch } from "wouter";
 import {
   collection,
   getDocs,
@@ -14,6 +15,7 @@ import {
   Save,
   ChevronDown,
   ChevronUp,
+  Search,
 } from "lucide-react";
 
 interface MCQQuestion {
@@ -45,14 +47,29 @@ interface EditData {
 }
 
 export default function QuestionsManager() {
+  const searchString = useSearch();
+  const params = new URLSearchParams(searchString);
+  const initialSearch = params.get("search") || "";
+  const initialTab = (params.get("tab") as "MCQ" | "essay") || "MCQ";
+  const didInit = useRef(false);
+
   const [questions, setQuestions] = useState<Question[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<"MCQ" | "essay">("MCQ");
+  const [activeTab, setActiveTab] = useState<"MCQ" | "essay">(initialTab);
+  const [search, setSearch] = useState(initialSearch);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editData, setEditData] = useState<EditData>({} as EditData);
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [expandedId, setExpandedId] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!didInit.current && (initialSearch || initialTab !== "MCQ")) {
+      setSearch(initialSearch);
+      setActiveTab(initialTab);
+      didInit.current = true;
+    }
+  }, [initialSearch, initialTab]);
 
   const fetchQuestions = useCallback(async () => {
     setLoading(true);
@@ -138,7 +155,12 @@ export default function QuestionsManager() {
     }
   };
 
-  const displayed = questions.filter((q) => q.type === activeTab);
+  const displayed = questions.filter(
+    (q) =>
+      q.type === activeTab &&
+      (search.trim() === "" ||
+        q.question.toLowerCase().includes(search.toLowerCase()))
+  );
 
   const currentChoices = (editData.choices || []).filter((c) => c.trim() !== "");
 
@@ -147,6 +169,25 @@ export default function QuestionsManager() {
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-800">إدارة الأسئلة</h1>
         <p className="text-gray-500 text-sm mt-1">تعديل وحذف الأسئلة الموجودة</p>
+      </div>
+
+      <div className="relative mb-4">
+        <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+        <input
+          type="text"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="ابحث عن سؤال..."
+          className="w-full pr-10 pl-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#670320]/20 focus:border-[#670320] bg-white"
+        />
+        {search && (
+          <button
+            onClick={() => setSearch("")}
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        )}
       </div>
 
       <div className="flex gap-2 mb-6">

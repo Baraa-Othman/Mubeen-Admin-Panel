@@ -1,4 +1,5 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
+import { useSearch } from "wouter";
 import {
   collection,
   getDocs,
@@ -33,12 +34,23 @@ type SortField = "points" | "total_points" | null;
 type SortDir = "asc" | "desc";
 
 export default function UsersManagement() {
+  const searchString = useSearch();
+  const initialSearch = new URLSearchParams(searchString).get("search") || "";
+  const didInit = useRef(false);
+
   const [users, setUsers] = useState<AppUser[]>([]);
   const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState(initialSearch);
   const [sortField, setSortField] = useState<SortField>(null);
   const [sortDir, setSortDir] = useState<SortDir>("desc");
   const [actionLoading, setActionLoading] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!didInit.current && initialSearch) {
+      setSearch(initialSearch);
+      didInit.current = true;
+    }
+  }, [initialSearch]);
 
   const fetchUsers = useCallback(async () => {
     try {

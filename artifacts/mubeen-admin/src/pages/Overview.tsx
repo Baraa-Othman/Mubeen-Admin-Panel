@@ -23,7 +23,7 @@ export default function Overview() {
     const fetchStats = async () => {
       try {
         const [usersSnap, mcqSnap, essaySnap, pendingSnap] = await Promise.all([
-          getDocs(collection(db, "users")),
+          getDocs(query(collection(db, "users"), where("role", "==", "user"))),
           getDocs(collection(db, "MCQ")),
           getDocs(collection(db, "essay_questions")),
           getDocs(query(collection(db, "reports"), where("status", "==", "pending"))),

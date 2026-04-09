@@ -7,6 +7,7 @@ import {
   Timestamp,
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
+import { useLocation } from "wouter";
 import {
   Flag,
   CheckCircle,
@@ -17,6 +18,7 @@ import {
   ChevronUp,
   HelpCircle,
   Info,
+  ExternalLink,
 } from "lucide-react";
 
 interface UserInfo {
@@ -47,10 +49,12 @@ function UserCard({
   user,
   label,
   variant,
+  onNavigate,
 }: {
   user: UserInfo;
   label: string;
   variant: "reporter" | "reported";
+  onNavigate?: () => void;
 }) {
   const isReported = variant === "reported";
 
@@ -58,13 +62,24 @@ function UserCard({
     <div
       className={`rounded-xl p-4 ${isReported ? "bg-red-50 border border-red-100" : "bg-gray-50 border border-gray-100"}`}
     >
-      <div className="flex items-center gap-2 mb-3">
-        {isReported ? (
-          <Flag className="h-4 w-4 text-red-500" />
-        ) : (
-          <User className="h-4 w-4 text-[#670320]" />
+      <div className="flex items-center justify-between gap-2 mb-3">
+        <div className="flex items-center gap-2">
+          {isReported ? (
+            <Flag className="h-4 w-4 text-red-500" />
+          ) : (
+            <User className="h-4 w-4 text-[#670320]" />
+          )}
+          <p className="text-xs font-semibold text-gray-500">{label}</p>
+        </div>
+        {onNavigate && (
+          <button
+            onClick={onNavigate}
+            className="flex items-center gap-1 px-2.5 py-1 bg-[#670320] text-white text-xs font-semibold rounded-lg hover:bg-[#8a0428] transition shadow-sm"
+          >
+            <ExternalLink className="h-3 w-3" />
+            عرض المستخدم
+          </button>
         )}
-        <p className="text-xs font-semibold text-gray-500">{label}</p>
       </div>
       <div className="flex items-center gap-3">
         {user.profileImage ? (
@@ -104,6 +119,7 @@ const reportTypeLabels: Record<string, string> = {
 };
 
 export default function ReportsManagement() {
+  const [_location, navigate] = useLocation();
   const [reports, setReports] = useState<Report[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<"all" | "pending" | "resolved">("all");
@@ -386,6 +402,14 @@ export default function ReportsManagement() {
                               user={report.reported_user}
                               label="المُبلَّغ عنه"
                               variant="reported"
+                              onNavigate={
+                                report.reported_user?.email
+                                  ? () =>
+                                      navigate(
+                                        `/users?search=${encodeURIComponent(report.reported_user.email)}`
+                                      )
+                                  : undefined
+                              }
                             />
                           )}
                       </div>
@@ -395,16 +419,31 @@ export default function ReportsManagement() {
                       report.report_type !== "general" &&
                       report.reported_question?.question_text && (
                         <div className="bg-amber-50 rounded-xl p-4 border border-amber-100">
-                          <div className="flex items-center gap-2 mb-2">
-                            <HelpCircle className="h-4 w-4 text-amber-600" />
-                            <p className="text-xs font-semibold text-gray-500">
-                              السؤال المُبلَّغ عنه
-                              {report.reported_question.type && (
-                                <span className="mr-2 px-1.5 py-0.5 bg-[#c2a05e]/20 text-[#a8833a] rounded text-xs">
-                                  {report.reported_question.type}
-                                </span>
-                              )}
-                            </p>
+                          <div className="flex items-center justify-between gap-2 mb-2">
+                            <div className="flex items-center gap-2">
+                              <HelpCircle className="h-4 w-4 text-amber-600" />
+                              <p className="text-xs font-semibold text-gray-500">
+                                السؤال المُبلَّغ عنه
+                                {report.reported_question.type && (
+                                  <span className="mr-2 px-1.5 py-0.5 bg-[#c2a05e]/20 text-[#a8833a] rounded text-xs">
+                                    {report.reported_question.type}
+                                  </span>
+                                )}
+                              </p>
+                            </div>
+                            <button
+                              onClick={() => {
+                                const q = report.reported_question;
+                                const tab = q.type === "essay" ? "essay" : "MCQ";
+                                navigate(
+                                  `/questions?search=${encodeURIComponent(q.question_text.slice(0, 60))}&tab=${tab}`
+                                );
+                              }}
+                              className="flex items-center gap-1.5 px-3 py-1.5 bg-[#670320] text-white text-xs font-semibold rounded-lg hover:bg-[#8a0428] transition shadow-sm flex-shrink-0"
+                            >
+                              <ExternalLink className="h-3.5 w-3.5" />
+                              تعديل السؤال
+                            </button>
                           </div>
                           <p className="text-sm text-gray-700 leading-relaxed">
                             {report.reported_question.question_text}
