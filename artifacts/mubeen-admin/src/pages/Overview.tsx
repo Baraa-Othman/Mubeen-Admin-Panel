@@ -136,7 +136,7 @@ export default function Overview() {
             </p>
           </div>
           <div className="bg-[#670320]/5 rounded-xl p-4 border border-[#670320]/10">
-            <p className="text-xs text-[#670320]/60 mb-1">تقارير تحتاج مراجعة</p>
+            <p className="text-xs text-[#670320]/60 mb-1">بلاغات تحتاج مراجعة</p>
             <p className="text-2xl font-bold text-[#670320]">
               {loading ? (
                 <span className="inline-block h-7 w-12 bg-red-100 animate-pulse rounded" />
