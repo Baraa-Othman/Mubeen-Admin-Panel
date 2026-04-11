@@ -37,7 +37,7 @@ function NavItem({
         className={cn(
           "flex items-center gap-3 px-4 py-3 rounded-xl cursor-pointer transition-all duration-200 group",
           isActive
-            ? "bg-[#670320] text-white shadow-md font-bold"
+            ? "bg-[#c2a05e] text-white shadow-md font-bold"
             : "text-gray-500 hover:bg-gray-100 hover:text-gray-800"
         )}
       >
