@@ -37,19 +37,19 @@ function NavItem({
         className={cn(
           "flex items-center gap-3 px-4 py-3 rounded-xl cursor-pointer transition-all duration-200 group",
           isActive
-            ? "bg-[#c2a05e] text-[#670320] shadow-md font-bold"
-            : "text-white/70 hover:bg-white/10 hover:text-white"
+            ? "bg-[#670320] text-white shadow-md font-bold"
+            : "text-gray-500 hover:bg-gray-100 hover:text-gray-800"
         )}
       >
         <Icon
           className={cn(
             "h-5 w-5 flex-shrink-0 transition-colors",
-            isActive ? "text-[#670320]" : "text-white/60 group-hover:text-white"
+            isActive ? "text-white" : "text-gray-400 group-hover:text-gray-600"
           )}
         />
         <span className="text-sm">{label}</span>
         {isActive && (
-          <ChevronLeft className="h-4 w-4 mr-auto text-[#670320]" />
+          <ChevronLeft className="h-4 w-4 mr-auto text-white/70" />
         )}
       </div>
     </Link>
@@ -61,10 +61,10 @@ export default function Sidebar() {
 
   return (
     <aside
-      className="w-64 bg-[#670320] min-h-screen flex flex-col shadow-2xl"
+      className="w-64 bg-white min-h-screen flex flex-col shadow-[1px_0_0_0_#e5e7eb]"
       dir="rtl"
     >
-      <div className="p-5 border-b border-white/10">
+      <div className="p-5 border-b border-gray-100">
         <div className="flex items-center gap-3">
           <div className="w-12 h-12 rounded-full bg-[#670320] flex items-center justify-center flex-shrink-0 overflow-hidden border-2 border-[#c2a05e]/60">
             <img
@@ -74,8 +74,8 @@ export default function Sidebar() {
             />
           </div>
           <div>
-            <h1 className="text-white font-bold text-lg leading-tight">مُبين</h1>
-            <p className="text-white/50 text-xs">لوحة التحكم</p>
+            <h1 className="text-[#670320] font-bold text-lg leading-tight">مُبين</h1>
+            <p className="text-gray-400 text-xs">لوحة التحكم</p>
           </div>
         </div>
       </div>
@@ -86,16 +86,16 @@ export default function Sidebar() {
         ))}
       </nav>
 
-      <div className="p-4 border-t border-white/10">
+      <div className="p-4 border-t border-gray-100">
         <div className="mb-3 px-2">
-          <p className="text-white/40 text-xs mb-0.5">مسجّل كـ</p>
-          <p className="text-white/80 text-sm font-medium truncate">
+          <p className="text-gray-400 text-xs mb-0.5">مسجّل كـ</p>
+          <p className="text-gray-600 text-sm font-medium truncate">
             {user?.displayName || user?.email}
           </p>
         </div>
         <button
           onClick={logout}
-          className="flex items-center gap-3 w-full px-4 py-2.5 rounded-xl text-white/60 hover:bg-white/10 hover:text-white transition-all duration-200 text-sm"
+          className="flex items-center gap-3 w-full px-4 py-2.5 rounded-xl text-gray-500 hover:bg-red-50 hover:text-red-600 transition-all duration-200 text-sm"
         >
           <LogOut className="h-4 w-4" />
           <span>تسجيل الخروج</span>
