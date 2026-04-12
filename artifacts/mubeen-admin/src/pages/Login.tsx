@@ -66,7 +66,7 @@ export default function Login() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  placeholder="admin@mubeen.com"
+                  placeholder="admin@mubeenar.com"
                   className="w-full pr-10 pl-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#c2a05e]/30 focus:border-[#c2a05e] text-gray-800 bg-gray-50 transition"
                 />
               </div>
