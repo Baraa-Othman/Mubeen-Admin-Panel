@@ -8,7 +8,7 @@ import UsersManagement from "@/pages/UsersManagement";
 import QuestionsManager from "@/pages/QuestionsManager";
 import BulkUpload from "@/pages/BulkUpload";
 import ReportsManagement from "@/pages/ReportsManagement";
-import logo from "@assets/Mubeen_final_logo_part_I_1776336336925.png";
+import logo from "@assets/Mubeen_final_logo_part_I_mini_1776337217438.png";
 
 const queryClient = new QueryClient();
 

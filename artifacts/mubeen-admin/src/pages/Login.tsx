@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Eye, EyeOff, Lock, Mail } from "lucide-react";
-import logo from "@assets/Mubeen_final_logo_part_I_1776336336925.png";
+import logo from "@assets/Mubeen_final_logo_part_I_mini_1776337217438.png";
 
 export default function Login() {
   const { login, authError } = useAuth();

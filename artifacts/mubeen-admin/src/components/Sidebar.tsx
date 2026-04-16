@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { cn } from "@/lib/utils";
-import logo from "@assets/Mubeen_final_logo_part_I_1776336336925.png";
+import logo from "@assets/Mubeen_final_logo_part_I_mini_1776337217438.png";
 
 const navItems = [
   { href: "/", icon: LayoutDashboard, label: "الرئيسية" },
