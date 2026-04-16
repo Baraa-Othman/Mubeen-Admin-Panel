@@ -8,6 +8,7 @@ import UsersManagement from "@/pages/UsersManagement";
 import QuestionsManager from "@/pages/QuestionsManager";
 import BulkUpload from "@/pages/BulkUpload";
 import ReportsManagement from "@/pages/ReportsManagement";
+import logo from "@assets/Mubeen_final_logo_part_I_1776336336925.png";
 
 const queryClient = new QueryClient();
 
@@ -21,10 +22,8 @@ function AppRouter() {
         dir="rtl"
       >
         <div className="text-center">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#670320]/10 mb-4">
-            <span className="text-3xl font-bold text-[#670320]">م</span>
-          </div>
-          <div className="flex items-center gap-2 text-gray-500 text-sm">
+          <img src={logo} alt="مُبين" className="w-44 mx-auto rounded-xl mb-4" />
+          <div className="flex items-center justify-center gap-2 text-gray-500 text-sm">
             <span className="animate-spin rounded-full h-4 w-4 border-2 border-[#670320] border-t-transparent"></span>
             جارٍ التحميل...
           </div>
