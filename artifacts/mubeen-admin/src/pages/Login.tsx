@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Eye, EyeOff, Lock, Mail } from "lucide-react";
-import logo from "@assets/Baraa_and_khalid_future_1775732882119.png";
+import logo from "@assets/Mubeen_final_logo_part_I_1776336336925.png";
 
 export default function Login() {
   const { login, authError } = useAuth();
@@ -24,14 +24,11 @@ export default function Login() {
     >
       <div className="w-full max-w-md">
         <div className="text-center mb-6">
-          <div className="inline-flex items-center justify-center w-24 h-24 rounded-full bg-[#670320] mb-3 overflow-hidden shadow-xl">
-            <img
-              src={logo}
-              alt="مُبين"
-              className="w-full h-full object-contain"
-            />
-          </div>
-          <h1 className="text-2xl font-bold text-[#670320] mb-0.5">مُبين</h1>
+          <img
+            src={logo}
+            alt="مُبين"
+            className="w-52 mx-auto rounded-xl mb-3"
+          />
           <p className="text-gray-400 text-sm">لوحة تحكم المسؤول</p>
         </div>
 

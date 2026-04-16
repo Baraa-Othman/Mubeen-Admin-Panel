@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { cn } from "@/lib/utils";
-import logo from "@assets/Baraa_and_khalid_future_1775732882119.png";
+import logo from "@assets/Mubeen_final_logo_part_I_1776336336925.png";
 
 const navItems = [
   { href: "/", icon: LayoutDashboard, label: "الرئيسية" },
@@ -65,18 +65,13 @@ export default function Sidebar() {
       dir="rtl"
     >
       <div className="p-5 border-b border-gray-100">
-        <div className="flex items-center gap-3">
-          <div className="w-12 h-12 rounded-full bg-[#670320] flex items-center justify-center flex-shrink-0 overflow-hidden border-2 border-[#c2a05e]/60">
-            <img
-              src={logo}
-              alt="مُبين"
-              className="w-full h-full object-contain"
-            />
-          </div>
-          <div>
-            <h1 className="text-[#670320] font-bold text-lg leading-tight">مُبين</h1>
-            <p className="text-gray-400 text-xs">لوحة التحكم</p>
-          </div>
+        <div className="flex flex-col items-center gap-1">
+          <img
+            src={logo}
+            alt="مُبين"
+            className="w-36 object-contain rounded-lg"
+          />
+          <p className="text-gray-400 text-xs">لوحة التحكم</p>
         </div>
       </div>
 
