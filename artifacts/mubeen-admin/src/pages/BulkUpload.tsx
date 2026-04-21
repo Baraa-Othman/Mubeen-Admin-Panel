@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 
 interface MCQItem {
-  id: string;
+  question_id: string;
   question: string;
   answer: string;
   choices: string[];
@@ -20,7 +20,7 @@ interface MCQItem {
 }
 
 interface EssayItem {
-  id: string;
+  question_id: string;
   question: string;
   perfect_answer: string;
   category: string;
@@ -99,8 +99,8 @@ export default function BulkUpload() {
         const batch = writeBatch(db);
         const chunk = parsed.slice(i, i + BATCH_SIZE);
         chunk.forEach((item) => {
-          const { id, ...data } = item;
-          const ref = id ? doc(db, collName, id) : doc(collection(db, collName));
+          const { question_id, ...data } = item as any;
+          const ref = question_id ? doc(db, collName, question_id) : doc(collection(db, collName));
           batch.set(ref, data);
         });
         await batch.commit();
@@ -184,7 +184,7 @@ export default function BulkUpload() {
             {collectionType === "MCQ" ? (
               <pre>{`[
   {
-    "id": "معرّف_فريد",
+    "question_id": "q_76",
     "question": "نص السؤال",
     "answer": "الإجابة الصحيحة",
     "choices": ["خيار 1", "خيار 2", "خيار 3", "خيار 4"],
@@ -194,7 +194,7 @@ export default function BulkUpload() {
             ) : (
               <pre>{`[
   {
-    "id": "معرّف_فريد",
+    "question_id": "q_76",
     "question": "نص السؤال",
     "perfect_answer": "الإجابة النموذجية",
     "category": "التصنيف"
