@@ -100,7 +100,8 @@ export default function BulkUpload() {
         const chunk = parsed.slice(i, i + BATCH_SIZE);
         chunk.forEach((item) => {
           const { question_id, ...data } = item as any;
-          const ref = question_id ? doc(db, collName, question_id) : doc(collection(db, collName));
+          const docId = question_id != null ? String(question_id) : null;
+          const ref = docId ? doc(db, collName, docId) : doc(collection(db, collName));
           batch.set(ref, data);
         });
         await batch.commit();
