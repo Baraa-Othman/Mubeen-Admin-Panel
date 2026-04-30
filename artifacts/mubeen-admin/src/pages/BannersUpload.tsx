@@ -84,8 +84,13 @@ export default function BannersUpload() {
         url_path,
       });
 
-      setResult({ success: true, message: `تمت إضافة الخلفية "${title.trim()}" بنجاح.` });
-      reset();
+      const addedTitle = title.trim();
+      setFile(null);
+      setPreview(null);
+      setTitle("");
+      setPrice("");
+      if (fileRef.current) fileRef.current.value = "";
+      setResult({ success: true, message: `تمت إضافة الخلفية "${addedTitle}" بنجاح.` });
     } catch (err: any) {
       setResult({
         success: false,
