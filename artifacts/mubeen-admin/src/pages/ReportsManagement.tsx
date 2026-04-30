@@ -4,6 +4,8 @@ import {
   getDocs,
   doc,
   updateDoc,
+  addDoc,
+  serverTimestamp,
   Timestamp,
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
@@ -176,7 +178,19 @@ export default function ReportsManagement() {
   const markResolved = async (reportId: string) => {
     setResolvingId(reportId);
     try {
+      const report = reports.find((r) => r.id === reportId);
+
       await updateDoc(doc(db, "reports", reportId), { status: "resolved" });
+
+      if (report) {
+        await addDoc(collection(db, "notifications"), {
+          createdAt: serverTimestamp(),
+          message: "روجع بلاغك وحُلّت المشكلة",
+          reportedAt: report.reported_question?.question_text || "",
+          reporter: report.reporting_user?.email || "",
+        });
+      }
+
       setReports((prev) =>
         prev.map((r) => (r.id === reportId ? { ...r, status: "resolved" } : r))
       );
