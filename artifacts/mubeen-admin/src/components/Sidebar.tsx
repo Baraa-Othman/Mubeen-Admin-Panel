@@ -7,6 +7,7 @@ import {
   Flag,
   LogOut,
   ChevronLeft,
+  ImagePlus,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { cn } from "@/lib/utils";
@@ -17,6 +18,7 @@ const navItems = [
   { href: "/users", icon: Users, label: "إدارة المستخدمين" },
   { href: "/questions", icon: HelpCircle, label: "إدارة الأسئلة" },
   { href: "/upload", icon: Upload, label: "رفع الأسئلة" },
+  { href: "/banners", icon: ImagePlus, label: "إضافة خلفيات" },
   { href: "/reports", icon: Flag, label: "البلاغات" },
 ];
 

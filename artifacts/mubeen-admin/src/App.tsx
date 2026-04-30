@@ -8,6 +8,7 @@ import UsersManagement from "@/pages/UsersManagement";
 import QuestionsManager from "@/pages/QuestionsManager";
 import BulkUpload from "@/pages/BulkUpload";
 import ReportsManagement from "@/pages/ReportsManagement";
+import BannersUpload from "@/pages/BannersUpload";
 import logo from "@assets/‏‏Mubeen_Shrinked_Official_Logo_Transparent_1776516893933.png";
 
 const queryClient = new QueryClient();
@@ -64,6 +65,7 @@ function AppRouter() {
         <Route path="/questions" component={QuestionsManager} />
         <Route path="/upload" component={BulkUpload} />
         <Route path="/reports" component={ReportsManagement} />
+        <Route path="/banners" component={BannersUpload} />
         <Route>
           <div className="p-8 text-center text-gray-400" dir="rtl">
             الصفحة غير موجودة
