@@ -8,6 +8,7 @@ import {
   LogOut,
   ChevronLeft,
   ImagePlus,
+  Award,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { cn } from "@/lib/utils";
@@ -19,6 +20,7 @@ const navItems = [
   { href: "/questions", icon: HelpCircle, label: "إدارة الأسئلة" },
   { href: "/upload", icon: Upload, label: "رفع الأسئلة" },
   { href: "/banners", icon: ImagePlus, label: "إضافة خلفيات" },
+  { href: "/titles", icon: Award, label: "إضافة ألقاب" },
   { href: "/reports", icon: Flag, label: "البلاغات" },
 ];
 
