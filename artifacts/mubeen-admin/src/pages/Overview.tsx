@@ -94,10 +94,9 @@ const emptyDashboardData: DashboardData = {
   userScatterData: [],
 };
 
-const reportTypeLabels: Record<string, string> = {
-  question: "بلاغات الأسئلة",
-  user: "بلاغات المستخدمين",
-  general: "بلاغات عامة",
+const reportTypeLabels: Record<"mcq" | "essay", string> = {
+  mcq: "mcq",
+  essay: "essay",
 };
 
 function toNumber(value: unknown) {
@@ -107,6 +106,27 @@ function toNumber(value: unknown) {
 
 function formatNumber(value: number) {
   return Math.round(value).toLocaleString("ar-SA");
+}
+
+const axisTickStyle = { fontSize: 12, fill: "#4b5563" };
+const yAxisProps = {
+  tick: axisTickStyle,
+  tickMargin: 12,
+  width: 48,
+  allowDecimals: false,
+};
+
+function getQuestionReportType(
+  reportType: unknown,
+  reportedQuestionType: unknown
+) {
+  const candidates = [reportedQuestionType, reportType]
+    .map((value) => String(value || "").toLowerCase())
+    .filter(Boolean);
+
+  if (candidates.includes("mcq")) return "mcq";
+  if (candidates.includes("essay")) return "essay";
+  return null;
 }
 
 function ChartPanel({
@@ -124,7 +144,9 @@ function ChartPanel({
         <h2 className="text-base font-bold text-gray-800">{title}</h2>
         <p className="text-xs text-gray-400 mt-1">{description}</p>
       </div>
-      <div className="h-72">{children}</div>
+      <div className="h-72" dir="ltr">
+        {children}
+      </div>
     </div>
   );
 }
@@ -170,7 +192,10 @@ export default function Overview() {
           const data = d.data();
           return {
             status: data.status === "resolved" ? "resolved" : "pending",
-            type: data.report_type || "general",
+            type: getQuestionReportType(
+              data.report_type,
+              data.reported_question?.type
+            ),
           };
         });
 
@@ -210,9 +235,20 @@ export default function Overview() {
           ).length,
         }));
 
-        const reportsByType = new Map<string, ReportTypeDatum>();
+        const reportsByType = new Map<string, ReportTypeDatum>([
+          [
+            reportTypeLabels.mcq,
+            { name: reportTypeLabels.mcq, pending: 0, resolved: 0 },
+          ],
+          [
+            reportTypeLabels.essay,
+            { name: reportTypeLabels.essay, pending: 0, resolved: 0 },
+          ],
+        ]);
         reports.forEach((report) => {
-          const name = reportTypeLabels[report.type] || report.type;
+          if (!report.type) return;
+
+          const name = reportTypeLabels[report.type];
           const current =
             reportsByType.get(name) || { name, pending: 0, resolved: 0 };
 
@@ -334,7 +370,7 @@ export default function Overview() {
       bg: "bg-amber-50",
     },
     {
-      label: "أعلى رصيد نقاط",
+      label: "اعلى رصيد نقاط حالي",
       value: stats.highestPoints,
       icon: TrendingUp,
       textColor: "text-gray-700",
@@ -417,8 +453,8 @@ export default function Overview() {
                 margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
               >
                 <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                <XAxis dataKey="name" tick={{ fontSize: 12 }} />
-                <YAxis tick={{ fontSize: 12 }} allowDecimals={false} />
+                <XAxis dataKey="name" tick={axisTickStyle} />
+                <YAxis {...yAxisProps} />
                 <Tooltip
                   formatter={(value) => formatNumber(Number(value))}
                   contentStyle={{ borderRadius: 12, borderColor: "#e5e7eb" }}
@@ -451,6 +487,7 @@ export default function Overview() {
                   innerRadius={58}
                   outerRadius={95}
                   paddingAngle={4}
+                  labelLine={false}
                   label={({ name, value }) =>
                     `${name}: ${formatNumber(Number(value))}`
                   }
@@ -485,8 +522,8 @@ export default function Overview() {
                 margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
               >
                 <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                <XAxis dataKey="name" tick={{ fontSize: 12 }} />
-                <YAxis tick={{ fontSize: 12 }} allowDecimals={false} />
+                <XAxis dataKey="name" tick={axisTickStyle} />
+                <YAxis {...yAxisProps} />
                 <Tooltip
                   formatter={(value) => formatNumber(Number(value))}
                   contentStyle={{ borderRadius: 12, borderColor: "#e5e7eb" }}
@@ -513,13 +550,13 @@ export default function Overview() {
                   type="number"
                   dataKey="points"
                   name="النقاط الحالية"
-                  tick={{ fontSize: 12 }}
+                  tick={axisTickStyle}
                 />
                 <YAxis
                   type="number"
                   dataKey="totalPoints"
                   name="النقاط الكلية"
-                  tick={{ fontSize: 12 }}
+                  {...yAxisProps}
                 />
                 <ZAxis range={[80, 320]} />
                 <Tooltip
@@ -554,7 +591,7 @@ export default function Overview() {
             الإجمالي: {formatNumber(stats.totalReports)} بلاغ
           </div>
         </div>
-        <div className="h-72">
+        <div className="h-72" dir="ltr">
           {loading ? (
             <div className="h-full bg-gray-50 animate-pulse rounded-xl" />
           ) : dashboardData.reportTypeData.length > 0 ? (
@@ -564,8 +601,8 @@ export default function Overview() {
                 margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
               >
                 <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                <XAxis dataKey="name" tick={{ fontSize: 12 }} />
-                <YAxis tick={{ fontSize: 12 }} allowDecimals={false} />
+                <XAxis dataKey="name" tick={axisTickStyle} />
+                <YAxis {...yAxisProps} />
                 <Tooltip
                   formatter={(value) => formatNumber(Number(value))}
                   contentStyle={{ borderRadius: 12, borderColor: "#e5e7eb" }}
