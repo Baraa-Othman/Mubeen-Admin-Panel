@@ -120,6 +120,23 @@ const reportTypeLabels: Record<string, string> = {
   general: "بلاغ عام",
 };
 
+const statusRank = (status: Report["status"]) => (status === "pending" ? 0 : 1);
+
+const reportTime = (report: Report) => {
+  try {
+    return report.created_at?.toMillis() ?? Number.POSITIVE_INFINITY;
+  } catch {
+    return Number.POSITIVE_INFINITY;
+  }
+};
+
+const sortReports = (items: Report[]) =>
+  [...items].sort((a, b) => {
+    const statusDiff = statusRank(a.status) - statusRank(b.status);
+    if (statusDiff !== 0) return statusDiff;
+    return reportTime(a) - reportTime(b);
+  });
+
 export default function ReportsManagement() {
   const [_location, navigate] = useLocation();
   const [reports, setReports] = useState<Report[]>([]);
@@ -157,13 +174,7 @@ export default function ReportsManagement() {
         },
       }));
 
-      data.sort((a, b) => {
-        if (a.status === "pending" && b.status !== "pending") return -1;
-        if (a.status !== "pending" && b.status === "pending") return 1;
-        return 0;
-      });
-
-      setReports(data);
+      setReports(sortReports(data));
     } catch (err) {
       console.error("Error fetching reports:", err);
     } finally {
@@ -192,7 +203,11 @@ export default function ReportsManagement() {
       }
 
       setReports((prev) =>
-        prev.map((r) => (r.id === reportId ? { ...r, status: "resolved" } : r))
+        sortReports(
+          prev.map((r) =>
+            r.id === reportId ? { ...r, status: "resolved" } : r
+          )
+        )
       );
     } catch (err) {
       console.error("Error resolving report:", err);
@@ -281,13 +296,13 @@ export default function ReportsManagement() {
                       className={`mt-0.5 flex-shrink-0 p-2 rounded-lg ${
                         report.status === "pending"
                           ? "bg-orange-100"
-                          : "bg-gray-100"
+                          : "bg-green-100"
                       }`}
                     >
                       {report.status === "pending" ? (
                         <Clock className="h-4 w-4 text-orange-500" />
                       ) : (
-                        <CheckCircle className="h-4 w-4 text-gray-400" />
+                        <CheckCircle className="h-4 w-4 text-green-600" />
                       )}
                     </div>
                     <div className="flex-1 min-w-0">
@@ -299,12 +314,12 @@ export default function ReportsManagement() {
                           className={`px-2 py-0.5 rounded-full text-xs font-medium ${
                             report.status === "pending"
                               ? "bg-orange-100 text-orange-700"
-                              : "bg-gray-100 text-gray-500"
+                              : "bg-green-100 text-green-700"
                           }`}
                         >
                           {report.status === "pending"
                             ? "بانتظار المراجعة"
-                            : "تمت المعالجة"}
+                            : "معالج"}
                         </span>
                         {report.report_type && (
                           <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-[#670320]/10 text-[#670320]">
@@ -349,9 +364,9 @@ export default function ReportsManagement() {
                         تعيين كمُعالَج
                       </button>
                     ) : (
-                      <span className="flex items-center gap-1 px-3 py-1.5 bg-gray-50 text-gray-400 text-xs font-medium rounded-lg border border-gray-200">
+                      <span className="flex items-center gap-1 px-3 py-1.5 bg-green-50 text-green-700 text-xs font-medium rounded-lg border border-green-200">
                         <CheckCircle className="h-3.5 w-3.5" />
-                        مُعالَج
+                        معالج
                       </span>
                     )}
                   </div>

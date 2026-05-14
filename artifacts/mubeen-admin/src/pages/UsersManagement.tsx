@@ -5,6 +5,7 @@ import {
   getDocs,
   doc,
   updateDoc,
+  deleteDoc,
   query,
   where,
 } from "firebase/firestore";
@@ -18,6 +19,7 @@ import {
   CheckCircle,
   User,
   X,
+  Trash2,
 } from "lucide-react";
 
 interface AppUser {
@@ -45,6 +47,8 @@ export default function UsersManagement() {
   const [sortField, setSortField] = useState<SortField>(null);
   const [sortDir, setSortDir] = useState<SortDir>("desc");
   const [actionLoading, setActionLoading] = useState<string | null>(null);
+  const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
 
   useEffect(() => {
@@ -103,6 +107,19 @@ export default function UsersManagement() {
       console.error("Error toggling ban:", err);
     } finally {
       setActionLoading(null);
+    }
+  };
+
+  const deleteUser = async (userId: string) => {
+    setDeletingId(userId);
+    try {
+      await deleteDoc(doc(db, "users", userId));
+      setUsers((prev) => prev.filter((u) => u.id !== userId));
+      setDeleteConfirm(null);
+    } catch (err) {
+      console.error("Error deleting user:", err);
+    } finally {
+      setDeletingId(null);
     }
   };
 
@@ -262,25 +279,59 @@ export default function UsersManagement() {
                       )}
                     </td>
                     <td className="py-3 px-4">
-                      <button
-                        onClick={() => toggleBan(user.id, user.isBanned)}
-                        disabled={actionLoading === user.id}
-                        className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-                          user.isBanned
-                            ? "bg-green-100 text-green-700 hover:bg-green-200"
-                            : "bg-red-100 text-red-700 hover:bg-red-200"
-                        } disabled:opacity-50 disabled:cursor-not-allowed`}
-                      >
-                        {actionLoading === user.id ? (
-                          <span className="flex items-center gap-1">
-                            <span className="animate-spin rounded-full h-3 w-3 border-2 border-current border-t-transparent" />
-                          </span>
-                        ) : user.isBanned ? (
-                          "رفع الحظر"
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => toggleBan(user.id, user.isBanned)}
+                          disabled={actionLoading === user.id || deletingId === user.id}
+                          className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                            user.isBanned
+                              ? "bg-green-100 text-green-700 hover:bg-green-200"
+                              : "bg-red-100 text-red-700 hover:bg-red-200"
+                          } disabled:opacity-50 disabled:cursor-not-allowed`}
+                        >
+                          {actionLoading === user.id ? (
+                            <span className="flex items-center gap-1">
+                              <span className="animate-spin rounded-full h-3 w-3 border-2 border-current border-t-transparent" />
+                            </span>
+                          ) : user.isBanned ? (
+                            "رفع الحظر"
+                          ) : (
+                            "حظر"
+                          )}
+                        </button>
+
+                        {deleteConfirm === user.id ? (
+                          <div className="flex items-center gap-1">
+                            <button
+                              onClick={() => deleteUser(user.id)}
+                              disabled={deletingId === user.id}
+                              className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-red-600 text-white hover:bg-red-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                              {deletingId === user.id ? (
+                                <span className="inline-block animate-spin rounded-full h-3 w-3 border-2 border-white border-t-transparent" />
+                              ) : (
+                                "تأكيد"
+                              )}
+                            </button>
+                            <button
+                              onClick={() => setDeleteConfirm(null)}
+                              disabled={deletingId === user.id}
+                              className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-gray-100 text-gray-600 hover:bg-gray-200 transition-all disabled:opacity-50"
+                            >
+                              إلغاء
+                            </button>
+                          </div>
                         ) : (
-                          "حظر"
+                          <button
+                            onClick={() => setDeleteConfirm(user.id)}
+                            disabled={deletingId === user.id}
+                            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold bg-red-50 text-red-700 hover:bg-red-100 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                          >
+                            <Trash2 className="h-3.5 w-3.5" />
+                            حذف
+                          </button>
                         )}
-                      </button>
+                      </div>
                     </td>
                   </tr>
                 ))
